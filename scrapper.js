@@ -3,12 +3,17 @@ const fs = require('fs');
 const path = require('path');
 
 async function scrapeCodePen(url) {
-    const browser = await puppeteer.launch({ headless: false });
+    const browser = await puppeteer.launch({ headless: false, args: ['--start-maximized'] });
     const page = await browser.newPage();
+    await page.setViewport({ width: 1920, height: 1080 });
 
     await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
 
     try {
+        await page.waitForSelector('#view-switcher-button');
+        await page.click('#view-switcher-button');
+        await page.waitForSelector('#right-layout');
+        await page.click('#right-layout');
         await page.waitForSelector('#box-html .CodeMirror-code', { timeout: 60000 });
         await page.waitForSelector('#box-css .CodeMirror-code', { timeout: 60000 });
 
@@ -42,8 +47,13 @@ async function scrapeCodePen(url) {
         const htmlCode = await slowScrollAndCapture('#box-html .CodeMirror-code');
         const cssCode = await slowScrollAndCapture('#box-css .CodeMirror-code');
 
+
         const htmlFileName = generateFileName('code', 'html');
         const cssFileName = generateFileName('code', 'css');
+        const screenshotFileName = generateScreenshotFileName('code', 'png');
+
+        const outputElement = await page.$('.output-container');
+        await outputElement.screenshot({ path: path.join('images', screenshotFileName) });
 
         if (!fs.existsSync('code')) {
             fs.mkdirSync('code');
@@ -54,6 +64,7 @@ async function scrapeCodePen(url) {
 
         console.log(`HTML saved to ${htmlFileName}`);
         console.log(`CSS saved to ${cssFileName}`);
+        console.log(`Screenshot saved to ${screenshotFileName}`);
 
     } catch (error) {
         console.error('Error during scraping:', error);
@@ -73,6 +84,16 @@ const generateFileName = (prefix, ext) => {
     return fileName;
 };
 
-const url = 'https://codepen.io/shadowstack/pen/wWQGzj';
+const generateScreenshotFileName = (prefix, ext) => {
+    let count = 1;
+    let fileName = `${prefix}${count}.${ext}`;
+    while (fs.existsSync(path.join('images', fileName))) {
+        count++;
+        fileName = `${prefix}${count}.${ext}`;
+    }
+    return fileName;
+};
+
+const url = 'https://codepen.io/veronicadev/pen/WJyOwG';
 
 scrapeCodePen(url);

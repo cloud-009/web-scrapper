@@ -1,0 +1,38 @@
+<main>
+  <header>
+    <h1>Smooth Horizontal Scrolling</h1>
+  </header>
+<section class="content">
+  
+  
+  <p>In the era of responsive design, often times we will have a series of card-like divs. While we may show them all on desktop, on mobile things tend to be different. What if we want to have an inner container where the user scrolls left and right to view each card? How do we achieve that?</p>
+  <p>Here's a demo. There are more cards to the right that can be scrolled to.</p>
+  
+  <div class="scrolling-wrapper">
+    <div class="card"><h2>Card</h2></div>
+    <div class="card"><h2>Card</h2></div>
+    <div class="card"><h2>Card</h2></div>
+    <div class="card"><h2>Card</h2></div>
+    <div class="card"><h2>Card</h2></div>
+
+
+
+  </div>
+  <p>To make this, we need to create a container that holds our cards. Then we will enable horizontal scrolling on that container.</p>
+  <p>The <code>overflow-x</code> and <code>overflow-y</code> enable the div to only scroll horizontally. The combination of <code>white-space: nowrap</code> and <code>display: inline-block</code> will neatly line up the cards.</p>
+  <p>We can also use Flexbox to achieve the same result.</p>
+
+  <p>The result is the same. We have all our cards on a single line and they are scrollalble left to right.</p>
+  <div class="scrolling-wrapper-flexbox">
+
+
+
+
+  <p>On iOS, you want to add <code>-webkit-overflow-scrolling: touch;</code> to your scroll container. By default, Safari will not smoothly scroll these elements.</p>
+  <p>I wrote a <a href="https://codepen.io/colinlord/post/horizontal-scrolling-containers" >blog post</a> on this topic if you want to learn more.</p>
+</section>
+</main>
+
+
+
+
