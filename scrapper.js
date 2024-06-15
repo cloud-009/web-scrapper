@@ -19,19 +19,22 @@ async function scrapeCodePen(url) {
                 if (editor) {
                     const totalHeight = editor.scrollHeight;
                     let distance = 0;
-                    let content = [];
+                    let content = '';
+                    const captured = new Set();
 
                     while (distance < totalHeight) {
+                        const visibleContent = Array.from(element.querySelectorAll('.CodeMirror-line'))
+                            .map(el => el.textContent)
+                            .filter(line => !captured.has(line));
+
+                        visibleContent.forEach(line => captured.add(line));
+                        content += visibleContent.join('\n') + '\n';
+
                         editor.scrollBy(0, 100);
                         distance += 100;
                         await new Promise(resolve => setTimeout(resolve, 200));
-
-                        // Capture the content after each scroll
-                        const elements = document.querySelectorAll(sel + ' .CodeMirror-line');
-                        const currentContent = Array.from(elements).map(el => el.textContent);
-                        content = content.concat(currentContent);
                     }
-                    return content.join('\n');
+                    return content;
                 }
             }, selector);
         }
@@ -39,14 +42,15 @@ async function scrapeCodePen(url) {
         const htmlCode = await slowScrollAndCapture('#box-html .CodeMirror-code');
         const cssCode = await slowScrollAndCapture('#box-css .CodeMirror-code');
 
-        console.log('HTML Code:', htmlCode);
-        console.log('CSS Code:', cssCode);
-
         const htmlFileName = generateFileName('code', 'html');
         const cssFileName = generateFileName('code', 'css');
 
-        fs.writeFileSync(`code/${htmlFileName}`, htmlCode);
-        fs.writeFileSync(`code/${cssFileName}`, cssCode);
+        if (!fs.existsSync('code')) {
+            fs.mkdirSync('code');
+        }
+
+        fs.writeFileSync(path.join('code', htmlFileName), htmlCode);
+        fs.writeFileSync(path.join('code', cssFileName), cssCode);
 
         console.log(`HTML saved to ${htmlFileName}`);
         console.log(`CSS saved to ${cssFileName}`);
@@ -62,13 +66,13 @@ async function scrapeCodePen(url) {
 const generateFileName = (prefix, ext) => {
     let count = 1;
     let fileName = `${prefix}${count}.${ext}`;
-    while (fs.existsSync(path.join(__dirname, fileName))) {
+    while (fs.existsSync(path.join('code', fileName))) {
         count++;
         fileName = `${prefix}${count}.${ext}`;
     }
     return fileName;
 };
 
-const url = '';
+const url = 'https://codepen.io/shadowstack/pen/wWQGzj';
 
 scrapeCodePen(url);
