@@ -1,5 +1,6 @@
 # Web scraper to scrape the codepens.
 Scrape the codepen website contents (html & css).
+Takes the screenshot of the output container.
 
 ## How to run ?
 1. Clone the repository using `git clone https://github.com/cloud-009/web-scrapper.git`.
