@@ -16,5 +16,4 @@ scrapeCodePen(url);
 
 ## Output
 The **scrapper** script generates the html and css code, and adds it into the `code/code1.html` && `code/code1.css` files.
-As of now the content is being scraped, but getting duplicate.
-Solving the current issue.
+As of now the content is being scraped, but the content is being skipped little bit, working on the same issue
